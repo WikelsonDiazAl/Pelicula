@@ -1,0 +1,32 @@
+@page "/personajes"
+@inject SerieContext Sc
+@rendermode InteractiveServer
+@using Microsoft.EntityFrameworkCore;
+
+<h1 class="text-center">Personajes</h1>
+
+<div class="row">
+    @foreach (var personaje in Lista)
+    {
+        <div class="col-md-3">
+            <div class="card h-100">
+                <div class="card-body d-flex flex-column">
+                    <img class="card-img-top fixed-img" src="@personaje.Foto" alt="Imagen de @personaje.Nombre" />
+                    <h5 class="card-title text-center mb-2">@personaje.Nombre</h5>
+                    <p class="card-text"><strong>Apodo:</strong> @personaje.Apodo</p>
+                    <p class="card-text"><strong>Raza:</strong> @personaje.Raza</p>
+                    <p class="card-text"><strong>Edad:</strong> @personaje.Edad</p>
+                    <p class="card-text"><strong>Poder Característico:</strong> @personaje.Poder_caracteristico</p>
+                </div>
+            </div>
+        </div>
+    }
+</div>
+
+@code{
+    List<Personaje> Lista = new List<Personaje>();
+    
+    protected override async Task OnInitializedAsync(){
+        Lista =  await Sc.Personaje.ToListAsync();
+    }
+}

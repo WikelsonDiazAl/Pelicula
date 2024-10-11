@@ -1,0 +1,76 @@
+@page "/entidad/{tipo}"
+@inject NavigationManager NavMan
+@inject SerieContext Sc
+@rendermode InteractiveServer
+@using Microsoft.EntityFrameworkCore;
+<h1 class="text-center">@Tipo</h1>
+
+<div class="text-end me-3">
+    <buttom class="btn btn-primary" @onclick="Agregar">Agregar @Tipo</buttom>
+</div>
+
+<div class="row">
+    @foreach (var item in Lista)
+    {
+        <div class="col-md-3">
+            <div class="card h-100">
+                <div class="card-body d-flex flex-column">
+                    <img class="card-img-top fixed-img" src="@item.Foto" alt="Imagen de @item.Nombre" />
+                    <h5 class="card-title text-center mb-2">@item.Nombre</h5>
+                    <p class="card-text"><strong>Tipo:</strong> @item.Tipo</p>
+                    <p class="card-text"><strong>País:</strong> @item.Pais</p>
+                    <p class="card-text"><strong>Idioma:</strong> @item.Idioma</p>                    
+                    <p class="card-text flex-grow-1">@item.Resumen</p>
+                    <p class="card-text"><strong>Protagonistas:</strong> @item.Personajes.Count</p> 
+                </div>
+                <div class="card-footer text-end">
+                    <button class="btn btn-success" @onclick="() => Editar(item.Id)">Editar</button>
+                </div>
+            </div>
+        </div>
+    }
+</div>
+
+
+@code{
+    
+    [Parameter]
+
+    public string Tipo {get; set;} = "";
+    List<Serie_Libro_Pelicula> Lista = new List<Serie_Libro_Pelicula>();
+
+    Tipo_Entidad Entidad_Tipo;
+
+    protected override void OnParametersSet(){
+        switch(Tipo){
+            case "libros":
+            Entidad_Tipo = Tipo_Entidad.Libro;
+            break;
+            case "peliculas":
+            Entidad_Tipo = Tipo_Entidad.Pelicula;
+            break;
+            case "series":
+            Entidad_Tipo = Tipo_Entidad.Serie;
+            break;
+        }
+    }
+
+    private void Agregar(){
+        NavMan.NavigateTo($"entidad/{Tipo}/editar");
+    }
+
+    private void Editar(int id){
+        NavMan.NavigateTo($"entidad/{Tipo}/editar/{id}");
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender){
+
+        if(firstRender){
+            Lista = await Sc.Serie_Libro_Pelicula.Where(x => x.Tipo == Entidad_Tipo).ToListAsync();
+            StateHasChanged();
+        }
+
+    }
+
+
+}
